@@ -41,11 +41,6 @@ export interface IConfig {
     host: string;
     port: number;
   };
-  transactionRouting: {
-    host: string;
-    path: string;
-    port: number;
-  };
 }
 
 export const configuration: IConfig = {
@@ -76,10 +71,5 @@ export const configuration: IConfig = {
     db: <string>process.env.REDIS_DB,
     host: <string>process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT!, 10),
-  },
-  transactionRouting: {
-    host: <string>process.env.TRANSACTION_ROUTING_HOST,
-    path: <string>process.env.TRANSACTION_ROUTING_PATH,
-    port: parseInt(process.env.TRANSACTION_ROUTING_PORT!, 10),
   },
 };
