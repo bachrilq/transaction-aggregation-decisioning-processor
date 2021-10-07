@@ -1,10 +1,10 @@
 version: 1.0
 provider:
   name: openfaas
-  gateway: https://frmfaas.sybrin.com:8080
+  gateway: https://frmfaas.sybrin.com
 functions:
   off-transaction-aggregation-decisioning-processor:
-    namespace: frm-meshed
+    namespace: openfaas-fn
     lang: dockerfile
     handler: .
     image: actio.azurecr.io/transaction-aggregation-decisioning-processor:latest

@@ -18,7 +18,7 @@ if (configuration.env !== 'development' && configuration.env !== 'test') {
   });
 }
 
-const logger = configuration.env === 'development' || configuration.env === 'test' ? console : log4js.getLogger();
+const logger = console;
 
 export abstract class LoggerService {
   static timeStamp(): string {

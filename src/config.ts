@@ -4,13 +4,9 @@ import * as path from 'path';
 import * as dotenv from 'dotenv';
 
 // Load .env file into process.env if it exists. This is convenient for running locally.
-const result = dotenv.config({
+dotenv.config({
   path: path.resolve(__dirname, '../.env'),
 });
-
-if (result.error) {
-  throw result.error;
-}
 
 export interface IConfig {
   collectionName: string;
