@@ -1,16 +1,16 @@
 import { Context } from 'koa';
-import { LoggerService } from './helpers';
-import { ChannelResult } from './interfaces/channel-result';
-import { CustomerCreditTransferInitiation } from './interfaces/iPain001Transaction';
-import { Channel, NetworkMap } from './interfaces/network-map';
-import { RuleResult } from './interfaces/rule-result';
-import { TypologyResult } from './interfaces/typology-result';
-import { cacheClient, databaseClient } from './index';
+import { LoggerService } from '../helpers';
+import { ChannelResult } from '../interfaces/channel-result';
+import { IPain001Message } from '../interfaces/iPain001';
+import { Channel, NetworkMap } from '../interfaces/network-map';
+import { RuleResult } from '../interfaces/rule-result';
+import { TypologyResult } from '../interfaces/typology-result';
+import { cacheClient, databaseClient } from '../index';
 import apm from 'elastic-apm-node';
 
 export const handleChannels = async (
   ctx: Context,
-  transaction: CustomerCreditTransferInitiation,
+  transaction: IPain001Message,
   networkMap: NetworkMap,
   ruleResult: RuleResult[],
   typologyResult: TypologyResult,
@@ -23,7 +23,7 @@ export const handleChannels = async (
   try {
     apm.setTransactionName('TADProc');
     const span = apm.startSpan('handleChannels');
-    const transactionID = transaction.PaymentInformation.CreditTransferTransactionInformation.PaymentIdentification.EndToEndIdentification;
+    const transactionID = transaction.CstmrCdtTrfInitn.PmtInf.CdtTrfTxInf.PmtId.EndToEndId;
 
     // Initialize the result message
     const result = {
@@ -58,7 +58,7 @@ const checkChannelCompletion = async (
   channel: Channel,
   typologyResult: TypologyResult,
 ): Promise<boolean> => {
-  const cacheKey = `${transactionID}_${channel.channel_id}`;
+  const cacheKey = `${transactionID}_${channel.id}`;
 
   const cacheData = await cacheClient.getJson(cacheKey);
 
@@ -72,6 +72,7 @@ const checkChannelCompletion = async (
   cacheResults.push({
     typology: typologyResult.typology,
     result: typologyResult.result,
+    cfg: typologyResult.cfg,
   });
 
   // Second check: if all results for this Channel is found

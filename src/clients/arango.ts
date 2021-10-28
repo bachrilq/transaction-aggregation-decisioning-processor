@@ -2,7 +2,7 @@ import { Database } from 'arangojs';
 import { configuration } from '../config';
 import { LoggerService } from '../helpers';
 import { ChannelResult } from '../interfaces/channel-result';
-import { CustomerCreditTransferInitiation } from '../interfaces/iPain001Transaction';
+import { IPain001Message } from '../interfaces/iPain001';
 import { NetworkMap } from '../interfaces/network-map';
 import { RuleResult } from '../interfaces/rule-result';
 import { TypologyResult } from '../interfaces/typology-result';
@@ -44,7 +44,7 @@ export class ArangoDBService {
 
   async insertTransactionHistory(
     transactionID: string,
-    transaction: CustomerCreditTransferInitiation,
+    transaction: IPain001Message,
     networkMap: NetworkMap,
     ruleResult: RuleResult[],
     typologyResult: TypologyResult,
