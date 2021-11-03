@@ -66,5 +66,3 @@ if (Object.values(require.cache).filter(async (m) => m?.children.includes(module
     process.once(signal, () => terminate(signal));
   });
 }
-
-export default app;
