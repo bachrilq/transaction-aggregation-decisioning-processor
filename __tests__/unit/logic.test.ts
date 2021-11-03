@@ -16,14 +16,6 @@ const expectedResponse = JSON.parse(
   '{"transactionId":"b51ec534-ee48-4575-b6a9-ead2955b8069","message":"Successfully completed 2 channels","result":[{"Channel":"001@1.0","Result":{"transactionID":"b51ec534-ee48-4575-b6a9-ead2955b8069","message":"The transaction evaluation result is not saved.","status":"None"}},{"Channel":"002@1.0","Result":{"transactionID":"b51ec534-ee48-4575-b6a9-ead2955b8069","message":"The transaction evaluation result is not saved.","status":"None"}}]}',
 );
 
-describe('test health endpoint', () => {
-  test('should /health response with status code 200', async () => {
-    await supertest.get('/health').expect(200).expect({
-      status: 'UP',
-    });
-  });
-});
-
 describe('TADProc Service', () => {
   let getTransactionConfigSpy: jest.SpyInstance;
   let insertTransactionHistorySpy: jest.SpyInstance;
