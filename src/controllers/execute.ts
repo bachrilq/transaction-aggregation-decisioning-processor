@@ -1,11 +1,11 @@
 import { Context, Next } from 'koa';
-import { handleChannels } from '../services/app.service';
+import { handleChannels } from '../services/logic.service';
 import { LoggerService } from '../helpers';
-import { ChannelResult } from '../interfaces/channel-result';
+import { ChannelResult } from '../classes/channel-result';
 import { IPain001Message } from '../interfaces/iPain001';
-import { NetworkMap } from '../interfaces/network-map';
-import { RuleResult } from '../interfaces/rule-result';
-import { TypologyResult } from '../interfaces/typology-result';
+import { NetworkMap } from '../classes/network-map';
+import { RuleResult } from '../classes/rule-result';
+import { TypologyResult } from '../classes/typology-result';
 
 /**
  * Handle the incoming request and return the result
@@ -28,23 +28,33 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context> 
     let channelCounter = 0;
     const toReturn = [];
 
-    const pain001Message = networkMap.messages.find((tran) => tran.txTp === 'pain.001.001.11');
+    const pain001Message = networkMap.messages.find((tran) => tran.txTp === transaction.TxTp);
 
-    for (const channel of pain001Message!.channels) {
-      channelCounter++;
+    if (pain001Message) {
+      for (const channel of pain001Message.channels) {
+        channelCounter++;
 
-      const channelRes = await handleChannels(ctx, transaction, networkMap, ruleResult, typologyResult, channelResult, channel);
+        const channelRes = await handleChannels(transaction, networkMap, ruleResult, typologyResult, channelResult, channel);
 
-      toReturn.push({ Channel: channel.id, Result: channelRes });
+        toReturn.push({ Channel: channel.id, Result: channelRes });
+      }
+
+      const result = {
+        transactionId: transactionId,
+        message: `Successfully completed ${channelCounter} channels`,
+        result: toReturn,
+      };
+      ctx.body = result;
+    } else {
+      const result = {
+        transactionId: transactionId,
+        message: `Invalid message type`,
+        result: [],
+      };
+      LoggerService.log(`Invalid message type`);
+      ctx.body = result;
     }
 
-    const result = {
-      transactionId: transactionId,
-      message: `Successfully ${channelCounter} channels completed`,
-      result: toReturn,
-    };
-
-    ctx.body = result;
     ctx.status = 200;
     await next();
     return ctx;

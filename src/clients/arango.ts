@@ -1,11 +1,11 @@
 import { Database } from 'arangojs';
 import { configuration } from '../config';
 import { LoggerService } from '../helpers';
-import { ChannelResult } from '../interfaces/channel-result';
+import { ChannelResult } from '../classes/channel-result';
 import { IPain001Message } from '../interfaces/iPain001';
-import { NetworkMap } from '../interfaces/network-map';
-import { RuleResult } from '../interfaces/rule-result';
-import { TypologyResult } from '../interfaces/typology-result';
+import { NetworkMap } from '../classes/network-map';
+import { RuleResult } from '../classes/rule-result';
+import { TypologyResult } from '../classes/typology-result';
 
 export class ArangoDBService {
   client: Database;
@@ -50,7 +50,7 @@ export class ArangoDBService {
       const cycles = await client.query(query);
       const results = await cycles.batches.all();
 
-      LoggerService.log(`Query result: ${JSON.stringify(results)}`);
+      // LoggerService.log(`Query result: ${JSON.stringify(results)}`);
 
       return results;
     } catch (error) {

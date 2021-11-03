@@ -4,7 +4,7 @@ import { LoggerService } from './helpers';
 import apm from 'elastic-apm-node';
 import { Context } from 'koa';
 import { ArangoDBService } from './clients/arango';
-import { RedisService } from './clients/redisClient';
+import { RedisService } from './clients/redis';
 
 /*
  * Initialize the APM Logging

@@ -1,16 +1,14 @@
-import { Context } from 'koa';
 import { LoggerService } from '../helpers';
-import { ChannelResult } from '../interfaces/channel-result';
+import { ChannelResult } from '../classes/channel-result';
 import { IPain001Message } from '../interfaces/iPain001';
-import { Channel, NetworkMap } from '../interfaces/network-map';
-import { RuleResult } from '../interfaces/rule-result';
-import { TypologyResult } from '../interfaces/typology-result';
+import { Channel, NetworkMap } from '../classes/network-map';
+import { RuleResult } from '../classes/rule-result';
+import { TypologyResult } from '../classes/typology-result';
 import { cacheClient, databaseClient } from '../index';
 import apm from 'elastic-apm-node';
 import { TransactionConfiguration } from '../classes/transaction-configuration';
 
 export const handleChannels = async (
-  ctx: Context,
   transaction: IPain001Message,
   networkMap: NetworkMap,
   ruleResult: RuleResult[],
@@ -33,24 +31,26 @@ export const handleChannels = async (
 
     const requiredTypology = requiredChannel?.typologies.find((typology) => typology.id === typologyResult.typology);
 
+    // Initialize the result message
+    const result = {
+      transactionID: transactionID,
+      message: '',
+      status: '',
+    };
+
     if (requiredChannel && requiredTypology) {
-      let message = 'None';
+      let message: string;
       if (typologyResult.result >= requiredTypology.threshold) {
         message = 'Review';
       } else {
         message = 'None';
       }
+      result.status = message;
       LoggerService.log(`Transaction: ${transactionID} has status: ${message}`);
     }
 
-    // Initialize the result message
-    const result = {
-      transactionID: transactionID,
-      message: '',
-    };
-
     // Check if the channel is completed
-    const hasChannelCompleted = await checkChannelCompletion(ctx, transactionID, channel, channelResult, networkMap);
+    const hasChannelCompleted = await checkChannelCompletion(transactionID, channel, channelResult, networkMap);
 
     // If the channel is completed, then save the transaction evaluation result
     if (hasChannelCompleted) {
@@ -70,8 +70,7 @@ export const handleChannels = async (
   }
 };
 
-const checkChannelCompletion = async (
-  ctx: Context,
+export const checkChannelCompletion = async (
   transactionID: string,
   channel: Channel,
   channelResult: ChannelResult,
@@ -102,6 +101,7 @@ const checkChannelCompletion = async (
     return false;
   }
   // The channel is completed
-  cacheClient.deleteKey(cacheKey);
+  const isCleared = await cacheClient.clearCache();
+  LoggerService.log(`Cache is cleared: ${isCleared}`);
   return true;
 };
