@@ -35,7 +35,7 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context> 
 
       const channelRes = await handleChannels(ctx, transaction, networkMap, ruleResult, typologyResult, channelResult, channel);
 
-      toReturn.push(`{"Channel": ${channel.id}, "Result":{${channelRes}}}`);
+      toReturn.push({ Channel: channel.id, Result: channelRes });
     }
 
     const result = {

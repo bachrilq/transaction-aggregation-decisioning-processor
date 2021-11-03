@@ -7,6 +7,7 @@ import { RuleResult } from '../interfaces/rule-result';
 import { TypologyResult } from '../interfaces/typology-result';
 import { cacheClient, databaseClient } from '../index';
 import apm from 'elastic-apm-node';
+import { TransactionConfiguration } from '../classes/transaction-configuration';
 
 export const handleChannels = async (
   ctx: Context,
@@ -24,6 +25,23 @@ export const handleChannels = async (
     apm.setTransactionName('TADProc');
     const span = apm.startSpan('handleChannels');
     const transactionID = transaction.CstmrCdtTrfInitn.PmtInf.CdtTrfTxInf.PmtId.EndToEndId;
+    const transactionConfiguration = await databaseClient.getTransactionConfig();
+    const transactionConfigMessages = transactionConfiguration[0][0] as TransactionConfiguration;
+    const requiredConfigMessage = transactionConfigMessages.messages.find((msg) => msg.txTp === transaction.TxTp);
+
+    const requiredChannel = requiredConfigMessage?.channels.find((chan) => chan.id === channelResult.channel);
+
+    const requiredTypology = requiredChannel?.typologies.find((typology) => typology.id === typologyResult.typology);
+
+    if (requiredChannel && requiredTypology) {
+      let message = 'None';
+      if (typologyResult.result >= requiredTypology.threshold) {
+        message = 'Review';
+      } else {
+        message = 'None';
+      }
+      LoggerService.log(`Transaction: ${transactionID} has status: ${message}`);
+    }
 
     // Initialize the result message
     const result = {
@@ -32,7 +50,7 @@ export const handleChannels = async (
     };
 
     // Check if the channel is completed
-    const hasChannelCompleted = await checkChannelCompletion(ctx, transactionID, channel, typologyResult);
+    const hasChannelCompleted = await checkChannelCompletion(ctx, transactionID, channel, channelResult, networkMap);
 
     // If the channel is completed, then save the transaction evaluation result
     if (hasChannelCompleted) {
@@ -56,27 +74,27 @@ const checkChannelCompletion = async (
   ctx: Context,
   transactionID: string,
   channel: Channel,
-  typologyResult: TypologyResult,
+  channelResult: ChannelResult,
+  networkMap: NetworkMap,
 ): Promise<boolean> => {
   const cacheKey = `${transactionID}_${channel.id}`;
 
   const cacheData = await cacheClient.getJson(cacheKey);
 
-  const cacheResults: TypologyResult[] = cacheData ? [...JSON.parse(cacheData)] : [];
+  const cacheResults: ChannelResult[] = cacheData ? [...JSON.parse(cacheData)] : [];
 
   // First check: The channel is not completed
-  if (cacheResults.some((t) => t.typology === typologyResult.typology)) {
+  if (cacheResults.some((c) => c.channel === channelResult.channel)) {
     return false;
   }
 
   cacheResults.push({
-    typology: typologyResult.typology,
-    result: typologyResult.result,
-    cfg: typologyResult.cfg,
+    channel: channelResult.channel,
+    result: channelResult.result,
   });
 
   // Second check: if all results for this Channel is found
-  if (cacheResults.length < channel.typologies.length) {
+  if (cacheResults.length < networkMap.messages[0].channels.length) {
     LoggerService.log(`[${transactionID}] Save Channel interim rule results to Cache`);
 
     cacheClient.setJson(cacheKey, JSON.stringify(cacheResults));
@@ -84,5 +102,6 @@ const checkChannelCompletion = async (
     return false;
   }
   // The channel is completed
+  cacheClient.deleteKey(cacheKey);
   return true;
 };

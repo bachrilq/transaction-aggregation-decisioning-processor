@@ -1,10 +1,10 @@
-import { CustomerCreditTransferInitiation } from './iPain001Transaction';
+import { IPain001Message } from './iPain001';
 import { Typology } from './network-map';
 
 export class RuleRequest {
-  transaction: CustomerCreditTransferInitiation;
+  transaction: IPain001Message;
   typologies: Array<Typology>;
-  constructor(transaction: CustomerCreditTransferInitiation, typologies: Array<Typology>) {
+  constructor(transaction: IPain001Message, typologies: Array<Typology>) {
     this.transaction = transaction;
     this.typologies = typologies;
   }
