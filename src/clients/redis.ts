@@ -57,14 +57,7 @@ export class RedisService {
       });
     });
 
-  clearCache = (): Promise<boolean> =>
-    new Promise((resolve) => {
-      this.client.flushdb('ASYNC', (err, res) => {
-        if (err) {
-          LoggerService.error('Error while clearing cache with message:', err, 'RedisService');
-          resolve(false);
-        }
-        resolve(true);
-      });
-    });
+  quit = (): void => {
+    this.client.quit();
+  };
 }

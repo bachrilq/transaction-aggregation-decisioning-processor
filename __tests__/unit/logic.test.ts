@@ -61,6 +61,7 @@ describe('TADProc Service', () => {
   });
 
   afterAll(() => {
+    cacheClient.quit();
     app.terminate();
   });
 
