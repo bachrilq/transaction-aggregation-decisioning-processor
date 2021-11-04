@@ -55,7 +55,7 @@ export const handleChannels = async (
     // If the channel is completed, then save the transaction evaluation result
     if (hasChannelCompleted) {
       // Save the transaction evaluation result
-      // await databaseClient.insertTransactionHistory(transactionID, transaction, networkMap, ruleResult, typologyResult, channelResult);
+      await databaseClient.insertTransactionHistory(transactionID, transaction, networkMap, ruleResult, typologyResult, channelResult);
 
       result.message = 'The transaction evaluation result is saved.';
     } else {

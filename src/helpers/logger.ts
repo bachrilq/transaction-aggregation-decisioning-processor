@@ -6,7 +6,7 @@ if (configuration.env !== 'development' && configuration.env !== 'test') {
     appenders: {
       logstash: {
         type: '@log4js-node/logstash-http',
-        url: `http://${configuration.logstash?.host}:${configuration.logstash?.port}/_bulk`,
+        url: `http://${configuration.logstash.host}:${configuration.logstash.port}/_bulk`,
         application: 'logstash-log4js',
         logType: 'application',
         logChannel: configuration.functionName,
