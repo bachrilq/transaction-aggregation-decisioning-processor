@@ -43,15 +43,17 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context> 
         transactionId: transactionId,
         message: `Successfully completed ${channelCounter} channels`,
         result: toReturn,
+        networkMap,
       };
       ctx.body = result;
     } else {
       const result = {
         transactionId: transactionId,
-        message: `Invalid message type`,
+        message: 'Invalid message type',
         result: [],
+        networkMap,
       };
-      LoggerService.log(`Invalid message type`);
+      LoggerService.log('Invalid message type');
       ctx.body = result;
     }
 
