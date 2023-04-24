@@ -18,6 +18,12 @@ export const handleChannels = async (
     const transactionID = transaction[transactionType].GrpHdr.MsgId;
 
     const transactionConfiguration = await databaseClient.getTransactionConfig();
+
+    if (!transactionConfiguration) {
+      LoggerService.warn('No Transaction Configuration Found.');
+      return [];
+    }
+
     const transactionConfigMessages = transactionConfiguration[0] as TransactionConfiguration[];
     const requiredConfigMessage = transactionConfigMessages
       .find((tc) => tc.messages.find((msg) => msg.id === message.id && msg.cfg === message.cfg && msg.txTp === transaction.TxTp))
