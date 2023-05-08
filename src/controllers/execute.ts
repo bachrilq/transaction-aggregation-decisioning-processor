@@ -35,8 +35,15 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context> 
       toReturn.id = message.id;
       toReturn.cfg = message.cfg;
       let review = false;
-      const channelResults = await handleChannels(message, transaction, networkMap, channelResult);
 
+      let channelResults;
+      try {
+        channelResults = await handleChannels(message, transaction, networkMap, channelResult);
+      } catch (ex) {
+        console.log(JSON.stringify(ex));
+      }
+
+      channelResults = await handleChannels(message, transaction, networkMap, channelResult);
       if (channelResults.some((c) => c.status === 'Review')) review = true;
       toReturn.channelResult = channelResults;
 
