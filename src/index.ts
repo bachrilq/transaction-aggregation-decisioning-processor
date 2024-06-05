@@ -22,7 +22,7 @@ let databaseManager: DatabaseManagerInstance<typeof databaseManagerConfig>;
 export const dbInit = async (): Promise<void> => {
   databaseManager = await Singleton.getDatabaseManager(databaseManagerConfig);
 };
-console.log(`consumer is ${databaseManager}`);
+// console.log(`consumer is ${databaseManager}`);
 
 /*
  * Initialize the clients and start the server
@@ -36,6 +36,7 @@ export const runServer = async (): Promise<void> => {
     for (let retryCount = 0; retryCount < 10; retryCount++) {
       loggerService.log('Connecting to nats server...');
       const { consumers } = await getRoutesFromNetworkMap(databaseManager, configuration.serviceName);
+      console.log(`databaseManager is ${databaseManager}  ${configuration.serviceName}`);
       console.log(`consumer is ${consumers}`);
       if (!(await server.init(handleExecute, undefined, consumers, configuration.producerStream))) {
         await new Promise((resolve) => setTimeout(resolve, 5000));
