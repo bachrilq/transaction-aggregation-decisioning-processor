@@ -19,6 +19,8 @@ export const dbInit = async (): Promise<void> => {
 };
 
 console.log(configuration);
+const { consumers } = getRoutesFromNetworkMap(databaseManager, configuration.serviceName);
+console.log(`consumer is ${consumers}`);
 /*
  * Initialize the clients and start the server
  */
