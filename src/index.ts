@@ -18,6 +18,7 @@ export const dbInit = async (): Promise<void> => {
   databaseManager = await Singleton.getDatabaseManager(databaseManagerConfig);
 };
 
+console.log(configuration);
 /*
  * Initialize the clients and start the server
  */
@@ -77,7 +78,7 @@ if (cluster.isPrimary && configuration.maxCPU !== 1) {
         await runServer();
       }
     } catch (err) {
-      console.log(`after elsce cluster.isPrimary ${err}`);
+      console.log(`after else cluster.isPrimary ${err}`);
       loggerService.error(`Error while starting services on Worker ${process.pid}`, err);
       process.exit(1);
     }
