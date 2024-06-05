@@ -37,6 +37,7 @@ export const runServer = async (): Promise<void> => {
       loggerService.log('Connecting to nats server...');
       const { consumers } = await getRoutesFromNetworkMap(databaseManager, configuration.serviceName);
       console.log(`databaseManager is ${databaseManager}  ${configuration.serviceName}`);
+      console.log(databaseManager);
       console.log(`consumer is ${consumers}`);
       if (!(await server.init(handleExecute, undefined, consumers, configuration.producerStream))) {
         await new Promise((resolve) => setTimeout(resolve, 5000));
