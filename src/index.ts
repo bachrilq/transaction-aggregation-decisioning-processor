@@ -14,15 +14,15 @@ const databaseManagerConfig = configuration.db;
 export const loggerService: LoggerService = new LoggerService(configuration.sidecarHost);
 let databaseManager: DatabaseManagerInstance<typeof databaseManagerConfig>;
 
-testingDatabaseManager = await Singleton.getDatabaseManager(databaseManagerConfig);
-console.log(configuration);
-const testing_cons = getRoutesFromNetworkMap(testingDatabaseManager, configuration.serviceName);
-console.log(`consumer is ${testing_cons}`);
+// testingDatabaseManager = await Singleton.getDatabaseManager(databaseManagerConfig);
+// console.log(configuration);
+// const testing_cons = getRoutesFromNetworkMap(testingDatabaseManager, configuration.serviceName);
+// console.log(`consumer is ${testing_cons}`);
 
 export const dbInit = async (): Promise<void> => {
   databaseManager = await Singleton.getDatabaseManager(databaseManagerConfig);
 };
-
+console.log(`consumer is ${databaseManager}`);
 
 /*
  * Initialize the clients and start the server
